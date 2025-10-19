@@ -1,0 +1,48 @@
+
+    # Likely correct format based on GraphQL standards:
+    
+    mutation createTicket($input: CreateTicketInput!) {
+        createTicket(input: $input) {
+            id
+            ticketId
+            number
+            displayId
+            subject
+            description
+            status
+            priority
+            category
+            ticketType
+            source
+            createdAt
+            updatedAt
+            assignee {
+                id
+                userId
+                name
+                email
+            }
+            requester {
+                id
+                userId
+                name
+                email
+            }
+        }
+    }
+    
+    # Input format (likely):
+    {
+        "input": {
+            "subject": "string (required)",
+            "description": "string (required)", 
+            "priority": "LOW | MEDIUM | HIGH | URGENT | CRITICAL",
+            "status": "OPEN | IN_PROGRESS | RESOLVED | CLOSED",
+            "category": "string (optional)",
+            "ticketType": "INCIDENT | REQUEST | PROBLEM | CHANGE",
+            "assigneeId": "string (optional)",
+            "requesterId": "string (optional)",
+            "source": "API | EMAIL | PORTAL | PHONE"
+        }
+    }
+    
