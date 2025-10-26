@@ -14,6 +14,14 @@ from .notify_technician import (
     notify_sla_alert,
     notify_bottleneck_alert
 )
+from .create_ticket_note import (
+    create_ticket_note,
+    add_public_note,
+    add_private_note,
+    add_investigation_note,
+    add_resolution_note,
+    add_escalation_note
+)
 
 # All exports
 __all__ = [
@@ -25,5 +33,11 @@ __all__ = [
     "determine_assignment_logic", 
     "notify_technician_assignment",
     "notify_sla_alert",
-    "notify_bottleneck_alert"
+    "notify_bottleneck_alert",
+    "create_ticket_note",
+    "add_public_note",
+    "add_private_note",
+    "add_investigation_note",
+    "add_resolution_note",
+    "add_escalation_note"
 ]

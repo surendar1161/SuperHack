@@ -34,6 +34,14 @@ from .get_requester_roles import (
     get_roles_by_feature
 )
 
+from .create_client import (
+    create_client,
+    create_active_client,
+    create_prospect_client,
+    create_enterprise_client,
+    onboard_new_client
+)
+
 # All exports
 __all__ = [
     "get_technicians",
@@ -53,5 +61,10 @@ __all__ = [
     "get_requester_role_by_id",
     "get_requester_role_by_name",
     "get_requester_roles_summary",
-    "get_roles_by_feature"
+    "get_roles_by_feature",
+    "create_client",
+    "create_active_client",
+    "create_prospect_client",
+    "create_enterprise_client",
+    "onboard_new_client"
 ]

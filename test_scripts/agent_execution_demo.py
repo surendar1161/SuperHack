@@ -100,7 +100,7 @@ async def execute_agent_demo():
                       f"Tool: get_technicians | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)  # Brief pause between steps
+    await asyncio.sleep(4)  # 4-second pause between steps
     
     # Create Technician
     start_time = time.time()
@@ -108,7 +108,7 @@ async def execute_agent_demo():
         from src.tools.user.create_technician import create_technician
         result = await create_technician(
             first_name="Demo",
-            last_name="Technician"
+            last_name="Technician Oct 26 2025"
         )
         execution_time = time.time() - start_time
         
@@ -124,7 +124,35 @@ async def execute_agent_demo():
                       f"Tool: create_technician | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
+    
+    # Create Client Organization
+    start_time = time.time()
+    try:
+        from src.tools.user.create_client import create_client
+        import time as time_module
+        unique_suffix = str(int(time_module.time()))[-6:]  # Last 6 digits of timestamp
+        result = await create_client(
+            name=f"Demo Client Org Oct 26 2025 - {unique_suffix}",
+            stage="Active",
+            status="Paid",
+            account_manager_id="8275806997713629184"
+        )
+        execution_time = time.time() - start_time
+        
+        if result and result.get('success'):
+            logger.log_step(step, "User Management Agent", "Create Client Organization", "SUCCESS", 
+                          f"Tool: create_client | Created client ID: {result.get('account_id')} | Name: {result.get('name')}", execution_time)
+        else:
+            logger.log_step(step, "User Management Agent", "Create Client Organization", "FAILED", 
+                          f"Tool: create_client | Error: {result.get('error', 'Unknown error')}", execution_time)
+    except Exception as e:
+        execution_time = time.time() - start_time
+        logger.log_step(step, "User Management Agent", "Create Client Organization", "FAILED", 
+                      f"Tool: create_client | Exception: {str(e)}", execution_time)
+    
+    step += 1
+    await asyncio.sleep(4)
     
     # Get Client User (using existing user ID from your curl)
     start_time = time.time()
@@ -147,7 +175,7 @@ async def execute_agent_demo():
                       f"Tool: get_client_user | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Get Requester Roles
     start_time = time.time()
@@ -169,7 +197,7 @@ async def execute_agent_demo():
                       f"Tool: get_requester_roles | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # ========================================
     # TASK MANAGEMENT AGENT
@@ -180,8 +208,8 @@ async def execute_agent_demo():
     try:
         from src.tools.task.create_task import create_task
         result = await create_task(
-            title="Demo Task - System Maintenance",
-            description="Scheduled system maintenance and security updates",
+            title="Demo Task Oct 26 2025 - System Maintenance",
+            description="Scheduled system maintenance and security updates for October 26, 2025",
             estimated_time=180,
             status="In Progress"
         )
@@ -199,15 +227,15 @@ async def execute_agent_demo():
                       f"Tool: create_task | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Create Ticket
     start_time = time.time()
     try:
         from src.tools.ticket.create_ticket import create_ticket
         result = await create_ticket(
-            title="Demo Ticket - Network Connectivity Issue",
-            description="User reporting intermittent network connectivity problems in the office",
+            title="Demo Ticket Oct 26 2025 - Network Connectivity Issue",
+            description="User reporting intermittent network connectivity problems in the office on October 26, 2025",
             priority="High"
         )
         execution_time = time.time() - start_time
@@ -227,7 +255,7 @@ async def execute_agent_demo():
                       f"Tool: create_ticket | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Update Ticket
     start_time = time.time()
@@ -253,10 +281,37 @@ async def execute_agent_demo():
                       f"Tool: update_ticket | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
+    
+    # Add Ticket Note
+    start_time = time.time()
+    try:
+        from src.tools.ticket.create_ticket_note import create_ticket_note
+        # Use the ticket ID created in the previous step, or fallback to a default
+        ticket_id = created_ticket_id if created_ticket_id else "8952094470523527168"
+        result = await create_ticket_note(
+            ticket_id=ticket_id,
+            content="Investigation update Oct 26 2025: Network access points need to be replaced due to hardware failure detected today",
+            privacy_type="PUBLIC"
+        )
+        execution_time = time.time() - start_time
+        
+        if result and result.get('success'):
+            logger.log_step(step, "Task Management Agent", "Add Ticket Note", "SUCCESS", 
+                          f"Tool: create_ticket_note | Added note ID: {result.get('note_id')} to ticket {result.get('ticket_id')}", execution_time)
+        else:
+            logger.log_step(step, "Task Management Agent", "Add Ticket Note", "FAILED", 
+                          f"Tool: create_ticket_note | Error: {result.get('error', 'Unknown error')}", execution_time)
+    except Exception as e:
+        execution_time = time.time() - start_time
+        logger.log_step(step, "Task Management Agent", "Add Ticket Note", "FAILED", 
+                      f"Tool: create_ticket_note | Exception: {str(e)}", execution_time)
+    
+    step += 1
+    await asyncio.sleep(4)
     
     # ========================================
-    # STEP 3: WORKFLOW AGENT
+    # STEP 4: WORKFLOW AGENT
     # ========================================
     
     # Log Work
@@ -268,7 +323,7 @@ async def execute_agent_demo():
         result = await log_work(
             ticket_id=ticket_id,
             time_spent=90,
-            description="Investigated network connectivity issue, identified router configuration problem",
+            description="Oct 26 2025: Investigated network connectivity issue, identified router configuration problem",
             work_type="Investigation"
         )
         execution_time = time.time() - start_time
@@ -285,7 +340,7 @@ async def execute_agent_demo():
                       f"Tool: log_work | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Track Time
     start_time = time.time()
@@ -296,7 +351,7 @@ async def execute_agent_demo():
         result = await track_time(
             ticket_id=ticket_id,
             time_spent=45,
-            description="Applied router configuration fix and tested connectivity"
+            description="Oct 26 2025: Applied router configuration fix and tested connectivity"
         )
         execution_time = time.time() - start_time
         
@@ -312,10 +367,10 @@ async def execute_agent_demo():
                       f"Tool: track_time | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # ========================================
-    # STEP 4: ANALYTICS AGENT
+    # STEP 5: ANALYTICS AGENT
     # ========================================
     
     # Performance Metrics
@@ -339,7 +394,7 @@ async def execute_agent_demo():
                       f"Tool: performance_metrics | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # View Analytics
     start_time = time.time()
@@ -360,7 +415,7 @@ async def execute_agent_demo():
                       f"Tool: view_analytics | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Create Alert
     start_time = time.time()
@@ -368,8 +423,8 @@ async def execute_agent_demo():
         from src.tools.analytics.create_alert import create_alert
         result = await create_alert(
             asset_id="4293925678745489408",
-            message="High CPU Usage",
-            description="CPU Usage is very higher than usual - threshold breach detected",
+            message="High CPU Usage Alert Oct 26 2025",
+            description="CPU Usage is very higher than usual - threshold breach detected on October 26, 2025",
             severity="High"
         )
         execution_time = time.time() - start_time
@@ -386,10 +441,10 @@ async def execute_agent_demo():
                       f"Tool: create_alert | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # ========================================
-    # STEP 6: KNOWLEDGE AGENT
+    # STEP 7: KNOWLEDGE AGENT
     # ========================================
     
     # Create Knowledge Article
@@ -397,8 +452,8 @@ async def execute_agent_demo():
     try:
         from src.tools.knowledge.create_article import create_article
         result = await create_article(
-            title="Network Connectivity Troubleshooting Guide",
-            content="Step-by-step guide for diagnosing and resolving common network connectivity issues...",
+            title="Network Connectivity Troubleshooting Guide - Oct 26 2025",
+            content="Step-by-step guide for diagnosing and resolving common network connectivity issues updated October 26, 2025...",
             category="Troubleshooting"
         )
         execution_time = time.time() - start_time
@@ -415,14 +470,14 @@ async def execute_agent_demo():
                       f"Tool: create_article | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Analyze Request
     start_time = time.time()
     try:
         from src.tools.analysis.analyze_request import analyze_request
         result = await analyze_request(
-            request_text="My computer keeps disconnecting from the network every few minutes",
+            request_text="My computer keeps disconnecting from the network every few minutes - reported Oct 26 2025",
             priority="Medium"
         )
         execution_time = time.time() - start_time
@@ -439,14 +494,14 @@ async def execute_agent_demo():
                       f"Tool: analyze_request | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Generate Suggestions
     start_time = time.time()
     try:
         from src.tools.analysis.generate_suggestions import generate_suggestions
         result = await generate_suggestions(
-            issue_description="Network connectivity problems",
+            issue_description="Network connectivity problems reported Oct 26 2025",
             category="Network"
         )
         execution_time = time.time() - start_time
@@ -464,7 +519,7 @@ async def execute_agent_demo():
                       f"Tool: generate_suggestions | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Get Script List
     start_time = time.time()
@@ -490,10 +545,10 @@ async def execute_agent_demo():
                       f"Tool: get_script_list_by_type | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # ========================================
-    # STEP 8: BILLING AGENT
+    # STEP 9: BILLING AGENT
     # ========================================
     
     # Create Quote
@@ -502,7 +557,7 @@ async def execute_agent_demo():
         from src.tools.billing.create_quote import create_quote
         result = await create_quote(
             client_id="7206852887935602688",
-            description="Network infrastructure upgrade and maintenance",
+            description="Network infrastructure upgrade and maintenance - Quote dated Oct 26 2025",
             amount=2500.00
         )
         execution_time = time.time() - start_time
@@ -519,7 +574,7 @@ async def execute_agent_demo():
                       f"Tool: create_quote | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Create Invoice
     start_time = time.time()
@@ -527,7 +582,7 @@ async def execute_agent_demo():
         from src.tools.billing.create_invoice import create_invoice
         result = await create_invoice(
             client_id="7206852887935602688",
-            description="Network troubleshooting and repair services",
+            description="Network troubleshooting and repair services - Invoice dated Oct 26 2025",
             amount=350.00
         )
         execution_time = time.time() - start_time
@@ -544,7 +599,7 @@ async def execute_agent_demo():
                       f"Tool: create_invoice | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Get Payment Terms
     start_time = time.time()
@@ -566,7 +621,7 @@ async def execute_agent_demo():
                       f"Tool: get_payment_terms | Exception: {str(e)}", execution_time)
     
     step += 1
-    await asyncio.sleep(1)
+    await asyncio.sleep(4)
     
     # Get Offered Items
     start_time = time.time()
@@ -665,14 +720,16 @@ The SuperOps IT Technician Agent system demonstrates comprehensive functionality
     agent_tools = {
         "User Management Agent": [
             "get_technicians - Retrieve technician directory and availability",
-            "create_technician - Create new technician accounts with auto-generated credentials", 
+            "create_technician - Create new technician accounts with auto-generated credentials",
+            "create_client - Create new client organizations with headquarters setup", 
             "get_client_user - Retrieve client user information and details",
             "get_requester_roles - Retrieve requester roles with features and permissions"
         ],
         "Task Management Agent": [
             "create_task - Create system maintenance and project tasks",
             "create_ticket - Intelligent ticket creation with auto-assignment",
-            "update_ticket - Dynamic ticket status and field updates"
+            "update_ticket - Dynamic ticket status and field updates",
+            "create_ticket_note - Add notes and comments to tickets for documentation"
         ],
         "Workflow Agent": [
             "log_work - Work entry logging with billing integration",

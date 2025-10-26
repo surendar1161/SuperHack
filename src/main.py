@@ -103,6 +103,44 @@ def start():
     main()
 
 @app.command()
+def interactive():
+    """Start the interactive CLI interface"""
+    console.print("[bold blue]🚀 Starting Interactive SuperOps IT Technician Agent...[/bold blue]")
+    
+    try:
+        # Import and run the interactive agent
+        from .interactive_agent import InteractiveAgent
+        
+        agent = InteractiveAgent()
+        asyncio.run(agent.run())
+        
+    except Exception as e:
+        console.print(f"[bold red]❌ Error starting interactive agent: {e}[/bold red]")
+        raise typer.Exit(1)
+
+@app.command()
+def demo():
+    """Run the comprehensive agent demo"""
+    console.print("[bold blue]🎬 Starting SuperOps Agent Demo...[/bold blue]")
+    
+    try:
+        # Import and run the demo
+        import subprocess
+        import sys
+        
+        result = subprocess.run([
+            sys.executable, "test_scripts/agent_execution_demo.py"
+        ], capture_output=False)
+        
+        if result.returncode != 0:
+            console.print("[bold red]❌ Demo execution failed[/bold red]")
+            raise typer.Exit(1)
+        
+    except Exception as e:
+        console.print(f"[bold red]❌ Error running demo: {e}[/bold red]")
+        raise typer.Exit(1)
+
+@app.command()
 def health_check():
     """Perform a health check on the Strands system"""
     console.print("[bold blue]🔍 Performing Strands system health check...[/bold blue]")

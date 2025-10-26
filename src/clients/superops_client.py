@@ -1888,3 +1888,179 @@ class SuperOpsClient:
                 "error": str(e),
                 "alert": None
             }
+
+    async def create_client_v2(self, name: str, stage: str = "Active", status: str = "Paid",
+                              account_manager_id: str = "8275806997713629184", 
+                              site_name: str = None, timezone: str = "America/Los_Angeles",
+                              working_24x7: bool = False) -> Dict[str, Any]:
+        """
+        Create a new client organization using GraphQL V2 API
+        
+        Args:
+            name: Name of the client organization
+            stage: Client stage (Active, Prospect, etc.)
+            status: Client status (Paid, Trial, etc.)
+            account_manager_id: User ID of the account manager
+            site_name: Name of the headquarters site
+            timezone: Timezone code for the site
+            working_24x7: Whether the site operates 24/7
+            
+        Returns:
+            Dictionary containing client creation result
+        """
+        try:
+            self.logger.info(f"Creating client organization: {name}")
+            
+            # Generate site name if not provided
+            if not site_name:
+                import random
+                site_name = f"{name.replace(' ', '')}HQ{random.randint(100, 999)}"
+            
+            query = """
+            mutation createClientV2($input: CreateClientInputV2!) {
+              createClientV2(input: $input) {
+                accountId
+                name
+                stage 
+                status 
+                emailDomains
+                accountManager 
+                hqSite 
+                customFields
+              }
+            }
+            """
+            
+            variables = {
+                "input": {
+                    "name": name,
+                    "stage": stage,
+                    "status": status,
+                    "accountManager": {
+                        "userId": int(account_manager_id)
+                    },
+                    "hqSite": {
+                        "name": site_name,
+                        "working24x7": working_24x7,
+                        "timezoneCode": timezone
+                    }
+                }
+            }
+            
+            result = await self.execute_graphql_query(query, variables)
+            
+            if result and "data" in result and result["data"]["createClientV2"]:
+                client_data = result["data"]["createClientV2"]
+                
+                self.logger.info(f"Successfully created client: {client_data.get('accountId')} - {name}")
+                return {
+                    "success": True,
+                    "client": client_data
+                }
+            else:
+                # Check for specific error types
+                error_msg = "Failed to create client"
+                if result and "errors" in result:
+                    errors = result["errors"]
+                    for error in errors:
+                        if "extensions" in error and "clientError" in error["extensions"]:
+                            client_errors = error["extensions"]["clientError"]
+                            for client_error in client_errors:
+                                if client_error.get("code") == "unique_validation_failed":
+                                    if "name" in client_error.get("param", {}).get("attributes", []):
+                                        error_msg = f"Client name '{name}' already exists. Please use a unique name."
+                
+                self.logger.error(error_msg)
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "client": None
+                }
+                
+        except Exception as e:
+            self.logger.error(f"Failed to create client: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "client": None
+            }
+
+    async def create_ticket_note(self, ticket_id: str, content: str,
+                                added_by_user_id: str = "8275806997713629184",
+                                privacy_type: str = "PUBLIC", 
+                                added_on: str = None) -> Dict[str, Any]:
+        """
+        Create a note for a ticket using GraphQL
+        
+        Args:
+            ticket_id: ID of the ticket to add note to
+            content: Content of the note
+            added_by_user_id: User ID of the person adding the note
+            privacy_type: Privacy level (PUBLIC, PRIVATE)
+            added_on: Timestamp when note was added (ISO format)
+            
+        Returns:
+            Dictionary containing note creation result
+        """
+        try:
+            self.logger.info(f"Creating note for ticket {ticket_id}")
+            
+            # Generate timestamp if not provided
+            if not added_on:
+                from datetime import datetime
+                added_on = datetime.now().isoformat()
+            
+            query = """
+            mutation createTicketNote($input: CreateTicketNoteInput!) {
+              createTicketNote(input: $input) {
+                noteId
+                addedBy
+                addedOn
+                content
+                attachments {
+                 fileName
+                }
+                privacyType
+              }
+            }
+            """
+            
+            variables = {
+                "input": {
+                    "ticket": {
+                        "ticketId": ticket_id
+                    },
+                    "content": content,
+                    "addedBy": {
+                        "userId": int(added_by_user_id)
+                    },
+                    "addedOn": added_on,
+                    "privacyType": privacy_type
+                }
+            }
+            
+            result = await self.execute_graphql_query(query, variables)
+            
+            if result and "data" in result and result["data"]["createTicketNote"]:
+                note_data = result["data"]["createTicketNote"]
+                
+                self.logger.info(f"Successfully created note: {note_data.get('noteId')} for ticket {ticket_id}")
+                return {
+                    "success": True,
+                    "note": note_data
+                }
+            else:
+                self.logger.error("Failed to create ticket note")
+                return {
+                    "success": False,
+                    "error": "Failed to create ticket note",
+                    "note": None
+                }
+                
+        except Exception as e:
+            self.logger.error(f"Failed to create ticket note: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "note": None
+            }
